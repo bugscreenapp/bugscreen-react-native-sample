@@ -43,7 +43,7 @@ afterEach(() => {
 });
 
 test("Release startup requests screenshot access after dismissing the welcome", async () => {
-  render(<RootLayout />);
+  await render(<RootLayout />);
   await act(async () => {
     await Promise.resolve();
   });
