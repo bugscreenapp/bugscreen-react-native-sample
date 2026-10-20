@@ -79,9 +79,13 @@ export default function RootLayout() {
                 headerTintColor: colors.text,
                 contentStyle: { backgroundColor: colors.background },
                 headerShadowVisible: false,
+                headerBackTitle: "Back",
               }}
             >
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false, title: "BugScreen Travel" }}
+              />
               <Stack.Screen
                 name="destination/[id]"
                 options={{ headerShown: false }}
