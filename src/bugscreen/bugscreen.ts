@@ -7,11 +7,10 @@ let configured = false;
 
 // Keep all SDK calls here so the travel screens remain ordinary app code.
 export function startBugScreen(): Promise<void> {
-  if (!__DEV__) return Promise.resolve();
   startup ??= BugScreen.configure({
     apiKey: process.env.EXPO_PUBLIC_BUGSCREEN_API_KEY?.trim() ?? "",
     screenshotDetection: true,
-    debug: true,
+    debug: __DEV__,
   }).then(() => {
     BugScreen.setCustomData({
       userId: currentUser.userId,

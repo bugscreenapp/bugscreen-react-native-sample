@@ -13,7 +13,7 @@ function report() {
   if (!presentReport())
     Alert.alert(
       "BugScreen unavailable",
-      "Reporting is enabled in development builds. Check your API key if the SDK could not start.",
+      "BugScreen could not start. Check the API key used to build the app.",
     );
 }
 

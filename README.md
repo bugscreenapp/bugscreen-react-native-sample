@@ -78,10 +78,19 @@ Every SDK call lives behind `src/bugscreen/bugscreen.ts`. Configuration runs onc
 mount. Screens use the same breadcrumb names as the native samples. Permission failures and SDK
 configuration errors leave the travel app usable.
 
-Reporting is enabled only when React Native's `__DEV__` flag is true. Release/preview builds skip
-SDK configuration and make no reporting or logging calls. The native library is still linked in
-those builds; this is a runtime gate, rather than Android's separate no-op Maven artifact. Develop
-and evaluate reporting with a development build.
+Reporting is enabled in development, Release and preview builds so installed review builds can
+exercise screenshot detection, manual reports, breadcrumbs and custom data. SDK debug logging is
+enabled only when React Native's `__DEV__` flag is true.
+
+For a standalone iPhone review build, set the app key before building, then run:
+
+```bash
+npm run ios -- --configuration Release --device
+```
+
+The Release build bundles JavaScript and the app key at build time and runs without Metro. Changing
+`.env.local` afterwards requires rebuilding and reinstalling the app. The app still needs network
+access to load reporter settings and submit reports.
 
 The plugin writes `NSPhotoLibraryUsageDescription` on iOS. Android permissions come from the native
 SDK's merged manifest. Neither platform needs hand-edited generated files. The `ios/` and `android/`
