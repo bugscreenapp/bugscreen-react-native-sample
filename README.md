@@ -23,7 +23,7 @@ The `.nvmrc` selects Node 22.
 ```bash
 npm ci
 cp -f .env.example .env.local
-# Optional: set EXPO_PUBLIC_BUGSCREEN_API_KEY=fb_your_api_key_here in .env.local
+# For reporting, set EXPO_PUBLIC_BUGSCREEN_API_KEY=fb_your_api_key_here in .env.local
 npm run ios
 # or, with an Android emulator running:
 npm run android
@@ -38,8 +38,9 @@ JDK 17 when your default Java is newer.
 build, `npm start` starts Metro for the installed development client. Rebuild after changing native
 dependencies or config plugins. You do not need to rebuild for ordinary TypeScript screen changes.
 
-A blank API key is supported for browsing and opening the report form; uploading reports needs a
-real app key from the [BugScreen console](https://bugscreen.app). `.env.local` is git-ignored.
+A blank API key is supported for building and browsing the Travel app. Reporting requires a valid
+app key from the [BugScreen console](https://bugscreen.app) to load report settings and submit. A
+blank or invalid key opens the reporter with a settings-loading error. `.env.local` is git-ignored.
 `EXPO_PUBLIC_` values are embedded in the client bundle: use a BugScreen app key here, never a
 server credential. After changing it, restart Metro with `npm start -- --clear` and reload the app.
 
@@ -58,7 +59,7 @@ npx eas-cli@latest build --profile development --platform android
 ```
 
 EAS will prompt you to sign in and link your Expo project. Configure the API key in the build's
-Expo environment if uploads are needed; your git-ignored `.env.local` is not committed to GitHub.
+Expo environment for reporting; your git-ignored `.env.local` is not committed to GitHub.
 No signing credentials or Expo project IDs are bundled in this repository.
 
 ## The integration
