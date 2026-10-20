@@ -7,13 +7,12 @@ in-memory favourites seeded to Amalfi + Banff, a welcome dialog, procedural grad
 and the same teal/coral light and dark palette. All travel content is bundled; no backend or login
 is needed to browse.
 
-This is a standalone consumer of **`@bugscreen/react-native` 1.8.0 from npm**, which pins the
+This is a standalone consumer of **`@bugscreen/react-native` 1.8.1 from npm**, which pins the
 published native iOS and Android SDKs to 1.8.0. There are no workspace links or local SDK overrides.
-The app uses Expo SDK 57, React Native 0.86, TypeScript, and Expo Router.
+The app uses Expo SDK 58, React Native 0.88, React 19.3, TypeScript, and Expo Router.
 
-Expo 57 is intentional: the published BugScreen 1.8.0 Android bridge uses a React Native API that
-changed in RN 0.88 / Expo 58. Using Expo 58 currently fails native compilation. This sample consumes
-the unmodified published SDK; upgrade Expo after a compatible BugScreen patch is released.
+BugScreen 1.8.1 includes the Android bridge compatibility fix needed for React Native 0.88.
+The sample consumes the unmodified npm package; no `node_modules` patch is required.
 
 ## Run it
 
@@ -30,8 +29,8 @@ npm run android
 ```
 
 These commands generate native projects and create a **development build**. Local iOS builds need
-macOS, Xcode 26.4+ and CocoaPods; Android builds need an Android SDK and JDK 17. Expo SDK 57 supports
-iOS 16.4+ and Android 7+ (API 24), and compiles against Android API 36. Use `JAVA_HOME` to select
+macOS, Xcode 26.4+ and CocoaPods; Android builds need an Android SDK and JDK 17. [Expo SDK 58](https://docs.expo.dev/versions/v58.0.0/) supports
+iOS 16.4+ and Android 7+ (API 24), and compiles against Android API 37. Use `JAVA_HOME` to select
 JDK 17 when your default Java is newer.
 
 **Expo Go cannot run BugScreen's native SDK.** Use the development build above. After that first
@@ -40,7 +39,7 @@ dependencies or config plugins. You do not need to rebuild for ordinary TypeScri
 
 A blank API key is supported for building and browsing the Travel app. Reporting requires a valid
 app key from the [BugScreen console](https://bugscreen.app) to load report settings and submit. A
-blank or invalid key opens the reporter with a settings-loading error. `.env.local` is git-ignored.
+blank or malformed key shows a startup warning and disables reporting. `.env.local` is git-ignored.
 `EXPO_PUBLIC_` values are embedded in the client bundle: use a BugScreen app key here, never a
 server credential. After changing it, restart Metro with `npm start -- --clear` and reload the app.
 
@@ -66,7 +65,7 @@ No signing credentials or Expo project IDs are bundled in this repository.
 
 | What                                  | Where                                                                                      |
 | ------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Install the published SDK             | `package.json` → `@bugscreen/react-native: 1.8.0`                                          |
+| Install the published SDK             | `package.json` → `@bugscreen/react-native: 1.8.1`                                          |
 | Add the native config plugin          | `app.json` → `@bugscreen/react-native` with the Photos usage description                   |
 | Configure once at startup             | `src/app/_layout.tsx` → `startBugScreen()`                                                 |
 | Attach user/session context           | `src/bugscreen/bugscreen.ts` → `setCustomData` (`userId`, `plan`, `homeCity`, `sessionId`) |
@@ -127,6 +126,6 @@ npm run export       # Production Metro bundles for iOS + Android
 npx expo-doctor
 ```
 
-The GitHub Actions check runs lint, TypeScript, tests, and both platform exports. Native compilation
-is checked locally with development builds; Metro export does not compile the native SDK. The
-prebuilds can also be inspected with `npx expo prebuild --no-install`.
+Run these checks locally. Metro export does not compile the native SDK; use a development build
+to verify native integration. Generated native projects are never committed; inspect them locally
+with `npx expo prebuild --no-install`.
