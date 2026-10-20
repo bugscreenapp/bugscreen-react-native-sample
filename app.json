@@ -1,25 +1,32 @@
 {
   "expo": {
-    "name": "bugscreen-react-native-sample",
+    "name": "BugScreen Travel",
     "slug": "bugscreen-react-native-sample",
+    "scheme": "bugscreen-travel-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
+    "platforms": ["ios", "android"],
     "ios": {
+      "bundleIdentifier": "app.bugscreen.example.travel.expo",
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+      "package": "app.bugscreen.example.travel.expo"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "plugins": [
+      "expo-router",
+      [
+        "@bugscreen/react-native",
+        {
+          "photoLibraryUsageDescription": "BugScreen attaches the screenshot you just took to your bug report so we can see exactly what you saw."
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
