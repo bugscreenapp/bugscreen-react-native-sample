@@ -126,7 +126,6 @@ npm run export       # Production Metro bundles for iOS + Android
 npx expo-doctor
 ```
 
-GitHub Actions runs lint, TypeScript, tests, Expo dependency diagnostics, and both platform exports.
-A separate Android job generates the native project and assembles an arm64 development APK against
-the published SDK. Metro export alone does not compile the native SDK. The generated project is
-never committed; inspect it locally with `npx expo prebuild --no-install`.
+Run these checks locally. Metro export does not compile the native SDK; use a development build
+to verify native integration. Generated native projects are never committed; inspect them locally
+with `npx expo prebuild --no-install`.
