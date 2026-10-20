@@ -33,7 +33,7 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (!ready || welcome || sdkError || !__DEV__) return;
+    if (!ready || welcome || sdkError) return;
     // Let the welcome modal finish dismissing before Android presents permissions.
     const timer = setTimeout(() => {
       void requestScreenshotPermission()
@@ -68,8 +68,8 @@ export default function RootLayout() {
               accessibilityRole="alert"
               style={{ color: colors.error, padding: 16 }}
             >
-              BugScreen could not start. Check your API key in .env.local and
-              restart Metro.
+              BugScreen could not start. Check your API key in .env.local, then
+              restart Metro or rebuild the installed app.
             </Text>
           )}
           {ready ? (

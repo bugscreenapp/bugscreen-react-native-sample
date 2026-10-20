@@ -87,14 +87,36 @@ test("a configuration failure does not leave a usable reporting client", async (
   expect(sdk.setCustomData).not.toHaveBeenCalled();
 });
 
-test("release builds do not configure or call BugScreen", async () => {
+test("release builds configure reporting, permissions and breadcrumbs without SDK debug logging", async () => {
   Object.defineProperty(globalThis, "__DEV__", {
     value: false,
     configurable: true,
   });
-  await integration.startBugScreen();
-  expect(integration.presentReport()).toBe(false);
+  process.env.EXPO_PUBLIC_BUGSCREEN_API_KEY = "fb_test_key_for_unit_tests";
+  sdk.shouldRequestPermission.mockResolvedValue(true);
+  sdk.requestScreenshotPermission.mockResolvedValue(true);
+
+  await Promise.all([
+    integration.startBugScreen(),
+    integration.startBugScreen(),
+  ]);
+
+  expect(sdk.configure).toHaveBeenCalledTimes(1);
+  expect(sdk.configure).toHaveBeenCalledWith({
+    apiKey: "fb_test_key_for_unit_tests",
+    screenshotDetection: true,
+    debug: false,
+  });
+  expect(sdk.setCustomData).toHaveBeenCalledWith(
+    expect.objectContaining({
+      userId: "usr_84213",
+      sessionId: "sample-session",
+    }),
+  );
+  expect(integration.presentReport()).toBe(true);
+  expect(sdk.presentBugReport).toHaveBeenCalledTimes(1);
+  expect(await integration.requestScreenshotPermission()).toBe(true);
+  expect(sdk.requestScreenshotPermission).toHaveBeenCalledTimes(1);
   integration.breadcrumbs.screenViewed("explore");
-  expect(sdk.configure).not.toHaveBeenCalled();
-  expect(sdk.log).not.toHaveBeenCalled();
+  expect(sdk.log).toHaveBeenCalledWith("screen_viewed: explore", LogLevel.Info);
 });
