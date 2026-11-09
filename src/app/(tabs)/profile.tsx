@@ -2,6 +2,7 @@ import type { ComponentProps, PropsWithChildren } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
+  captureControls,
   presentReport,
   requestScreenshotPermission,
 } from "../../bugscreen/bugscreen";
@@ -9,12 +10,41 @@ import { Page, styles, useScreenBreadcrumb } from "../../components/TravelUI";
 import { currentUser as user } from "../../data/travel";
 import { useTheme } from "../../theme";
 
+function showBugScreenUnavailable() {
+  Alert.alert(
+    "BugScreen unavailable",
+    "BugScreen could not start. Check the API key used to build the app.",
+  );
+}
+
 function report() {
-  if (!presentReport())
-    Alert.alert(
-      "BugScreen unavailable",
-      "BugScreen could not start. Check the API key used to build the app.",
-    );
+  if (!presentReport()) showBugScreenUnavailable();
+}
+
+function captureAction(action: () => boolean) {
+  return () => {
+    if (!action()) showBugScreenUnavailable();
+  };
+}
+
+function checkRecordingStatus() {
+  void captureControls.recordingState().then(
+    (state) => {
+      if (!state) {
+        showBugScreenUnavailable();
+        return;
+      }
+      Alert.alert(
+        "Recording status",
+        state.reason ? `Unavailable (${state.reason})` : state.status,
+      );
+    },
+    () =>
+      Alert.alert(
+        "Recording status",
+        "Could not read the native recording state.",
+      ),
+  );
 }
 
 export default function ProfileScreen() {
@@ -129,6 +159,67 @@ export default function ProfileScreen() {
                 ),
               );
           }}
+          last
+        />
+      </Group>
+      <Group title="BugScreen capture controls">
+        <Row
+          icon="bug-outline"
+          title="Show floating button"
+          subtitle="Open the SDK menu from any screen"
+          onPress={captureAction(captureControls.showFloatingButton)}
+        />
+        <Row
+          icon="bug-outline"
+          title="Hide floating button"
+          subtitle="Remove the floating menu"
+          onPress={captureAction(captureControls.hideFloatingButton)}
+        />
+        <Row
+          icon="videocam-outline"
+          title="Start recent recording"
+          subtitle="Keep up to 15 seconds after system consent"
+          onPress={captureAction(captureControls.startRecording)}
+        />
+        <Row
+          icon="stop-circle-outline"
+          title="Stop recent recording"
+          subtitle="Stop capture and clear recent history"
+          onPress={captureAction(captureControls.stopRecording)}
+        />
+        <Row
+          icon="information-circle-outline"
+          title="Check recording status"
+          subtitle="Read the current state from the SDK"
+          onPress={checkRecordingStatus}
+        />
+        <Row
+          icon="notifications-outline"
+          title="Show report notification"
+          subtitle="Allow notifications when asked"
+          onPress={captureAction(captureControls.showReportNotification)}
+        />
+        <Row
+          icon="notifications-off-outline"
+          title="Hide report notification"
+          subtitle="Remove the reporting shortcut"
+          onPress={captureAction(captureControls.hideReportNotification)}
+        />
+        <Row
+          icon="phone-portrait-outline"
+          title="Enable shake-to-report"
+          subtitle="Shake while the app is open to report"
+          onPress={captureAction(() =>
+            captureControls.setShakeDetectionEnabled(true),
+          )}
+        />
+        <Row
+          icon="phone-portrait-outline"
+          title="Disable shake-to-report"
+          subtitle="Turn off the motion shortcut"
+          onPress={captureAction(() =>
+            captureControls.setShakeDetectionEnabled(false),
+          )}
           last
         />
       </Group>
