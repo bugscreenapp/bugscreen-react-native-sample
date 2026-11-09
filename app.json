@@ -20,7 +20,8 @@
       [
         "@bugscreen/react-native",
         {
-          "photoLibraryUsageDescription": "BugScreen attaches the screenshot you just took to your bug report so we can see exactly what you saw."
+          "photoLibraryUsageDescription": "BugScreen attaches the screenshot you just took to your bug report so we can see exactly what you saw.",
+          "motionUsageDescription": "BugScreen uses motion to open a bug report when you shake your device."
         }
       ],
       "expo-font"

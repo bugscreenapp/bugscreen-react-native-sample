@@ -9,6 +9,14 @@ jest.mock("@bugscreen/react-native", () => ({
     presentBugReport: jest.fn(),
     shouldRequestPermission: jest.fn(),
     requestScreenshotPermission: jest.fn(),
+    showFloatingButton: jest.fn(),
+    hideFloatingButton: jest.fn(),
+    startScreenRecording: jest.fn(),
+    stopScreenRecording: jest.fn(),
+    getScreenRecordingState: jest.fn(),
+    showReportNotification: jest.fn(),
+    hideReportNotification: jest.fn(),
+    setShakeDetectionEnabled: jest.fn(),
   },
   LogLevel: { Info: 2, Debug: 1 },
 }));
@@ -42,6 +50,9 @@ test("configures once and attaches the same user/session fields as the native sa
     apiKey: "fb_test_key_for_unit_tests",
     screenshotDetection: true,
     debug: true,
+    captureSystemLogs: true,
+    screenRecordingOptions: { durationSeconds: 15, quality: "balanced" },
+    showFloatingButton: true,
   });
   expect(sdk.setCustomData).toHaveBeenCalledWith({
     userId: "usr_84213",
@@ -64,6 +75,42 @@ test("allows running without an API key and delegates reporting and breadcrumbs 
     "save_toggled id=kyoto saved=true",
     LogLevel.Debug,
   );
+});
+
+test("capture controls delegate to the native SDK after startup", async () => {
+  const { captureControls } = integration;
+  expect(captureControls.startRecording()).toBe(false);
+  expect(await captureControls.recordingState()).toBeUndefined();
+  expect(sdk.startScreenRecording).not.toHaveBeenCalled();
+  expect(sdk.getScreenRecordingState).not.toHaveBeenCalled();
+
+  await integration.startBugScreen();
+  sdk.getScreenRecordingState.mockResolvedValue({
+    status: "unavailable",
+    reason: "permissionDenied",
+  });
+
+  expect(captureControls.showFloatingButton()).toBe(true);
+  expect(captureControls.hideFloatingButton()).toBe(true);
+  expect(captureControls.startRecording()).toBe(true);
+  expect(await captureControls.recordingState()).toEqual({
+    status: "unavailable",
+    reason: "permissionDenied",
+  });
+  expect(captureControls.stopRecording()).toBe(true);
+  expect(captureControls.showReportNotification()).toBe(true);
+  expect(captureControls.hideReportNotification()).toBe(true);
+  expect(captureControls.setShakeDetectionEnabled(true)).toBe(true);
+  expect(captureControls.setShakeDetectionEnabled(false)).toBe(true);
+
+  expect(sdk.showFloatingButton).toHaveBeenCalledTimes(1);
+  expect(sdk.hideFloatingButton).toHaveBeenCalledTimes(1);
+  expect(sdk.startScreenRecording).toHaveBeenCalledTimes(1);
+  expect(sdk.stopScreenRecording).toHaveBeenCalledTimes(1);
+  expect(sdk.showReportNotification).toHaveBeenCalledTimes(1);
+  expect(sdk.hideReportNotification).toHaveBeenCalledTimes(1);
+  expect(sdk.setShakeDetectionEnabled).toHaveBeenNthCalledWith(1, true);
+  expect(sdk.setShakeDetectionEnabled).toHaveBeenNthCalledWith(2, false);
 });
 
 test("requests screenshot access only when the native SDK says it is needed", async () => {
@@ -106,6 +153,9 @@ test("release builds configure reporting, permissions and breadcrumbs without SD
     apiKey: "fb_test_key_for_unit_tests",
     screenshotDetection: true,
     debug: false,
+    captureSystemLogs: true,
+    screenRecordingOptions: { durationSeconds: 15, quality: "balanced" },
+    showFloatingButton: true,
   });
   expect(sdk.setCustomData).toHaveBeenCalledWith(
     expect.objectContaining({
